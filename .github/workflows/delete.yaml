@@ -9,15 +9,9 @@ jobs:
       VERSION: ${{ github.sha }}
       CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
       REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
-      REGISTRY_PW: ${{ secrets.REGISTRY_PW  }}
-      NAMES: |
-        - video-streaming
-        - gateway
-        - history
-        - metadata
-        - mock-storage
-        - video-upload
-        - infrastructure
+      REGISTRY_PW: ${{ secrets.REGISTRY_PW }}
+      NAMES: video-streaming gateway history metadata mock-storage video-upload
+        infrastructure
     steps:
       - uses: actions/checkout@v3
       - uses: tale/kubectl-action@v1
@@ -26,7 +20,8 @@ jobs:
           kubectl-version: v1.24.2
       - name: Delete
         run: |
-          for NAME in ${NAMES[@]}
+          IFS=' ' read -r -a NAMES_ARRAY <<< "$NAMES"
+          for NAME in "${NAMES_ARRAY[@]}"
           do
             ./scripts/cd/delete.sh $NAME
           done
